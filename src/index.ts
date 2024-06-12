@@ -26,12 +26,13 @@ class ElapsedLogger implements IElapsedLogger {
     return this.parse(diff);
   }
 
-  getValue(unit: "ns" | "ms" | "sec" | "min" | "hr"): number {
+  getValue(unit?: "ns" | "ms" | "sec" | "min" | "hr"): number {
     switch(unit) {
       case "ns":
         return this._getNS();
       case "ms":
         return this._getMS();
+      default:
       case "sec":
         return this._getSeconds();
       case "min":
