@@ -26,13 +26,69 @@ class ElapsedLogger implements IElapsedLogger {
     return this.parse(diff);
   }
 
+  getValue(unit: "ns" | "ms" | "sec" | "min" | "hr"): number {
+    switch(unit) {
+      case "ns":
+        return this.getNS();
+      case "ms":
+        return this.getMS();
+      case "sec":
+        return this.getSeconds();
+      case "min":
+        return this.getMinutes();
+      case "hr":
+        return this.getHours();
+    }
+  }
+
+  getRawValue(hrtime?: HrTime): number {
+    if (!hrtime)
+      hrtime = this._diff();
+    return (hrtime[0] * 1e9 + hrtime[1]) / 1e6
+  }
+
+  getNS(sourceMS?: number): number {
+    if (!sourceMS) {
+      sourceMS = this.getRawValue()
+    }
+    return sourceMS
+  }
+
+  getMS(sourceMS?: number): number {
+    if (!sourceMS) {
+      sourceMS = this.getRawValue()
+    }
+    return Math.round(sourceMS % 1000)
+  }
+
+  getSeconds(sourceMS?: number): number {
+    if (!sourceMS) {
+      sourceMS = this.getRawValue()
+    }
+    return Math.round((((sourceMS / 1000) % 60) + Number.EPSILON) * 100) / 100
+  }
+
+  getMinutes(sourceMS?: number): number {
+    if (!sourceMS) {
+      sourceMS = this.getRawValue()
+    }
+    return Math.floor((sourceMS / (1000 * 60)) % 60);
+  }
+
+  getHours(sourceMS?: number): number {
+    if (!sourceMS) {
+      sourceMS = this.getRawValue()
+    }
+    return Math.floor((sourceMS / (1000 * 60 * 60)) % 24)
+  }
+
   parse(hrtime: HrTime): string {
     let result = '';
-    const sourceMS: number = (hrtime[0] * 1e9 + hrtime[1]) / 1e6;
-    const ms: number = Math.round(sourceMS % 1000);
-    const sec: number = Math.round((((sourceMS / 1000) % 60) + Number.EPSILON) * 100) / 100;
-    const mins: number = Math.floor((sourceMS / (1000 * 60)) % 60);
-    const hrs: number = Math.floor((sourceMS / (1000 * 60 * 60)) % 24);
+    const sourceMS: number = this.getRawValue(hrtime);
+    const ms: number = this.getMS(sourceMS);
+    const sec: number = this.getSeconds(sourceMS);
+    const mins: number = this.getMinutes(sourceMS);
+    const hrs: number = this.getHours(sourceMS);
 
     if (hrs > 0) {
       result += hrs + ' hours ';
