@@ -29,66 +29,66 @@ class ElapsedLogger implements IElapsedLogger {
   getValue(unit: "ns" | "ms" | "sec" | "min" | "hr"): number {
     switch(unit) {
       case "ns":
-        return this.getNS();
+        return this._getNS();
       case "ms":
-        return this.getMS();
+        return this._getMS();
       case "sec":
-        return this.getSeconds();
+        return this._getSeconds();
       case "min":
-        return this.getMinutes();
+        return this._getMinutes();
       case "hr":
-        return this.getHours();
+        return this._getHours();
     }
   }
 
-  getRawValue(hrtime?: HrTime): number {
+  _getRawValue(hrtime?: HrTime): number {
     if (!hrtime)
       hrtime = this._diff();
     return (hrtime[0] * 1e9 + hrtime[1]) / 1e6
   }
 
-  getNS(sourceMS?: number): number {
+  _getNS(sourceMS?: number): number {
     if (!sourceMS) {
-      sourceMS = this.getRawValue()
+      sourceMS = this._getRawValue()
     }
     return sourceMS
   }
 
-  getMS(sourceMS?: number): number {
+  _getMS(sourceMS?: number): number {
     if (!sourceMS) {
-      sourceMS = this.getRawValue()
+      sourceMS = this._getRawValue()
     }
     return Math.round(sourceMS % 1000)
   }
 
-  getSeconds(sourceMS?: number): number {
+  _getSeconds(sourceMS?: number): number {
     if (!sourceMS) {
-      sourceMS = this.getRawValue()
+      sourceMS = this._getRawValue()
     }
     return Math.round((((sourceMS / 1000) % 60) + Number.EPSILON) * 100) / 100
   }
 
-  getMinutes(sourceMS?: number): number {
+  _getMinutes(sourceMS?: number): number {
     if (!sourceMS) {
-      sourceMS = this.getRawValue()
+      sourceMS = this._getRawValue()
     }
     return Math.floor((sourceMS / (1000 * 60)) % 60);
   }
 
-  getHours(sourceMS?: number): number {
+  _getHours(sourceMS?: number): number {
     if (!sourceMS) {
-      sourceMS = this.getRawValue()
+      sourceMS = this._getRawValue()
     }
     return Math.floor((sourceMS / (1000 * 60 * 60)) % 24)
   }
 
   parse(hrtime: HrTime): string {
     let result = '';
-    const sourceMS: number = this.getRawValue(hrtime);
-    const ms: number = this.getMS(sourceMS);
-    const sec: number = this.getSeconds(sourceMS);
-    const mins: number = this.getMinutes(sourceMS);
-    const hrs: number = this.getHours(sourceMS);
+    const sourceMS: number = this._getRawValue(hrtime);
+    const ms: number = this._getMS(sourceMS);
+    const sec: number = this._getSeconds(sourceMS);
+    const mins: number = this._getMinutes(sourceMS);
+    const hrs: number = this._getHours(sourceMS);
 
     if (hrs > 0) {
       result += hrs + ' hours ';
