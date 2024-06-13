@@ -7,6 +7,7 @@ interface IElapsedLogger {
 declare type HrTime = [number, number];
 declare const _default: {
   get: (label: string) => string | boolean;
+  getValue: (unit?: "ns" | "ms" | "sec" | "min" | "hr") => number
   end: (label: string, overrideLabel?: string) => void;
   start: (label?: string) => IElapsedLogger;
 };
